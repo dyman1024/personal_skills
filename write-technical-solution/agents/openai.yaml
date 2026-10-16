@@ -1,0 +1,4 @@
+interface:
+  display_name: "技术方案设计"
+  short_description: "用关键图、受控术语和可验证表达产出结构清晰的可落地技术方案"
+  default_prompt: "使用 $write-technical-solution，以关键图优先、术语一致和可验证表达整理一份可落地技术方案。"

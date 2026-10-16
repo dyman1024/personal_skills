@@ -1,0 +1,4 @@
+interface:
+  display_name: "技术调研与方案解读"
+  short_description: "基于可追溯证据调研技术并清晰解释既有架构、方案与关键取舍"
+  default_prompt: "使用 $technical-research-explainer 调研一个技术主题或解释一份既有技术方案。"
