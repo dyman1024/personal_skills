@@ -226,7 +226,7 @@ figcaption b { color: var(--ink); font-weight: 600; }
   <h2><span class="no">①</span>{{模块一：一句副标题}}</h2>
   <p><b>原理：</b>{{它怎么工作，为什么这样排；不复述图里的每条线。}}</p>
 
-  <!-- Example fan-in → gate → fan-out. Each source joins a bus; one arrow enters the gate. -->
+  <!-- Example fan-in → gate → fan-out. Fan-in lines land 8 px apart and only the last has an arrowhead; each fan-out line has one. -->
   <figure>
     <div class="fig">
       <svg class="dg" viewBox="0 0 1100 230" role="img" aria-label="{{结论：几个入口汇入一个关口，关口放行后分发给哪些执行者}}">
@@ -246,11 +246,11 @@ figcaption b { color: var(--ink); font-weight: 600; }
         <rect class="box" x="680" y="140" width="250" height="52" rx="8"/><text class="ts" x="694" y="171">{{执行者二}}</text>
         <rect class="rbox" x="370" y="176" width="190" height="40" rx="8"/><text class="tr" x="384" y="201">{{拒绝结果}}</text>
 
-        <path class="ln" d="M260,42 H300 M260,106 H300 M260,170 H300 M300,42 V170"/>
-        <line class="ln" x1="300" y1="106" x2="338" y2="106" marker-end="url(#m1m)"/>
-        <path class="la" d="M590,106 H630 M630,46 V166"/>
-        <line class="la" x1="630" y1="46" x2="678" y2="46" marker-end="url(#m1a)"/>
-        <line class="la" x1="630" y1="166" x2="678" y2="166" marker-end="url(#m1a)"/>
+        <line class="ln" x1="260" y1="42" x2="338" y2="96"/>
+        <line class="ln" x1="260" y1="106" x2="338" y2="104"/>
+        <line class="ln" x1="260" y1="170" x2="338" y2="112" marker-end="url(#m1m)"/>
+        <line class="la" x1="590" y1="104" x2="678" y2="46" marker-end="url(#m1a)"/>
+        <line class="la" x1="590" y1="108" x2="678" y2="166" marker-end="url(#m1a)"/>
         <line class="lr" x1="465" y1="146" x2="465" y2="174" marker-end="url(#m1r)"/>
       </svg>
     </div>

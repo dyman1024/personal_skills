@@ -10,13 +10,15 @@ Errors (exit code 1):
   viewbox    a text runs outside the viewBox
 Warnings:
   overflow   a text runs past the edge of the box that it starts in
-  no-head    a solid connector ends on a shape edge without an arrowhead
+  no-head    a solid connector ends on a shape edge without an arrowhead, and no other
+             connector of its fan-in group ends on that edge with one
   text-line  a text crosses a connector
   text-text  two texts overlap
 
 Text widths are estimates from the page CSS: a CJK glyph is 1.0 em, a Latin glyph about 0.56 em,
 a monospace glyph 0.6 em. Rotated texts are skipped. Dashed connectors are associations and need
-no arrowhead. Lifelines use the class `life` and are skipped.
+no arrowhead. Lifelines use the class `life` and are skipped. Fan-in lines that end on one edge of
+one shape form a group; only the last line of the group needs an arrowhead.
 """
 import math
 import re
@@ -145,6 +147,23 @@ def path_points(d):
     return [p for p in lines if len(p) >= 2]
 
 
+def edge_of(point, box, tol=4.0):
+    """The edge of box (x0, y0, x1, y1) that point lies on, or None."""
+    x, y = point
+    x0, y0, x1, y1 = box
+    if y0 - tol <= y <= y1 + tol:
+        if abs(x - x0) <= tol:
+            return "left"
+        if abs(x - x1) <= tol:
+            return "right"
+    if x0 - tol <= x <= x1 + tol:
+        if abs(y - y0) <= tol:
+            return "top"
+        if abs(y - y1) <= tol:
+            return "bottom"
+    return None
+
+
 def seg_hits_box(p, q, box):
     """True when segment p-q crosses the rectangle (x0, y0, x1, y1)."""
     x0, y0, x1, y1 = box
@@ -236,14 +255,12 @@ def lint_svg(index, svg_text, base, styles):
     for c in connectors:
         for poly in c["polys"]:
             for p, q in zip(poly, poly[1:]):
-                trimmed = []
                 length = math.dist(p, q)
                 if length < 1:
                     continue
                 cut = min(4.0, length / 3) / length
                 a = (p[0] + (q[0] - p[0]) * cut, p[1] + (q[1] - p[1]) * cut)
                 b = (q[0] - (q[0] - p[0]) * cut, q[1] - (q[1] - p[1]) * cut)
-                trimmed.append((a, b))
                 for r in rects:
                     if r["order"] <= c["order"]:
                         continue
@@ -252,18 +269,24 @@ def lint_svg(index, svg_text, base, styles):
                         issues.append(("error", "occluded", "%s runs under a shape painted later at %.0f,%.0f "
                                        "(draw connectors after the zones and boxes they cross)" % (c["desc"], bx0, by0)))
                         break
-        if not c["dashed"] and not c["head_end"] and c["polys"]:
+    headed_edges = set()
+    for c in connectors:
+        if c["head_end"] and c["polys"]:
             end = c["polys"][-1][-1]
-            for r in rects:
-                bx0, by0, bx1, by1 = r["box"]
-                near_x = bx0 - 4 <= end[0] <= bx1 + 4
-                near_y = by0 - 4 <= end[1] <= by1 + 4
-                on_edge = near_x and near_y and (min(abs(end[0] - bx0), abs(end[0] - bx1)) <= 4
-                                                  or min(abs(end[1] - by0), abs(end[1] - by1)) <= 4)
-                if on_edge:
-                    issues.append(("warn", "no-head", "%s ends on a shape edge without an arrowhead "
-                                   "(use a bus with one arrow, or a dashed association)" % c["desc"]))
-                    break
+            for k, r in enumerate(rects):
+                edge = edge_of(end, r["box"])
+                if edge:
+                    headed_edges.add((k, edge))
+    for c in connectors:
+        if c["dashed"] or c["head_end"] or not c["polys"]:
+            continue
+        end = c["polys"][-1][-1]
+        for k, r in enumerate(rects):
+            edge = edge_of(end, r["box"])
+            if edge and (k, edge) not in headed_edges:
+                issues.append(("warn", "no-head", "%s ends on a shape edge without an arrowhead "
+                               "(add one, or make it a dashed association)" % c["desc"]))
+                break
 
     for t in texts:
         if t["rotated"]:
