@@ -1,0 +1,282 @@
+<title>{{项目名}} 技术分享</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/* Layout: overview first (one module map, one call path), then one section per module, each led by its diagrams. One light theme: white ground, black and grey text, light blue accent, light red / yellow / green status. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --ink: #15171a;
+  --muted: #6b7077;
+  --faint: #9ba0a6;
+  --line: #e4e6e9;
+  --line-strong: #c7cbd0;
+  --panel: #f6f7f8;
+  --blue-50: #eef5fd;
+  --blue-100: #dcebfb;
+  --blue-300: #93c1ee;
+  --blue-500: #4a90d9;
+  --blue-text: #2f73bf;
+  --red-50: #fdeeee;
+  --red-300: #f0aaaa;
+  --red-text: #c0453f;
+  --yellow-50: #fdf6df;
+  --yellow-300: #ecd385;
+  --yellow-text: #9a7200;
+  --green-50: #e9f6ed;
+  --green-300: #a3d6b1;
+  --green-text: #2e8549;
+  --f-body: "IBM Plex Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --f-display: "Noto Sans SC", "IBM Plex Sans", "PingFang SC", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15.5px; line-height: 1.72; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 24px; padding-block: 44px 96px; display: grid; gap: 64px; }
+header { display: grid; gap: 14px; }
+.eyebrow { font-size: 12.5px; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+h1 { font-family: var(--f-display); font-size: clamp(26px, 4vw, 36px); line-height: 1.3; margin: 0; text-wrap: balance; font-weight: 700; }
+h2 { font-family: var(--f-display); font-size: 25px; line-height: 1.35; margin: 0; text-wrap: balance; font-weight: 700; }
+h2 .no { color: var(--blue-text); margin-right: 6px; }
+h3 { font-family: var(--f-display); font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
+p { margin: 0; max-width: 74ch; }
+section { display: grid; gap: 20px; min-width: 0; scroll-margin-top: 16px; }
+.sub { display: grid; gap: 12px; min-width: 0; }
+.tag { font-size: 12.5px; color: var(--muted); font-family: var(--f-mono); }
+.tag a { color: var(--muted); }
+.meta { color: var(--muted); font-size: 13.5px; }
+.lede { font-size: 16.5px; max-width: 70ch; }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--panel); border: 1px solid var(--line); padding: 0 4px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-family: var(--f-mono); font-size: 12.8px; line-height: 1.6; }
+pre code { background: none; border: 0; padding: 0; font-size: inherit; overflow-wrap: normal; }
+pre .c { color: var(--muted); }
+pre .k { color: var(--blue-text); }
+pre .r { color: var(--red-text); }
+a { color: var(--blue-text); }
+a:focus-visible { outline: 2px solid var(--blue-500); outline-offset: 2px; border-radius: 2px; }
+ul, ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 76ch; }
+li::marker { color: var(--faint); }
+.toc { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; }
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.talk { border-left: 3px solid var(--blue-300); padding: 4px 0 4px 14px; font-size: 13.5px; color: var(--muted); max-width: 84ch; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.8px; line-height: 1.58; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 12.5px; color: var(--muted); font-weight: 600; background: var(--panel); }
+th .sm { display: block; font-weight: 400; font-size: 11.5px; }
+tr:last-child td { border-bottom: 0; }
+td.k { font-weight: 600; white-space: nowrap; }
+td code { font-size: .82em; }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; padding: 0 8px; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+.c-red { color: var(--red-text); background: var(--red-50); border-color: var(--red-300); }
+.c-yellow { color: var(--yellow-text); background: var(--yellow-50); border-color: var(--yellow-300); }
+.c-green { color: var(--green-text); background: var(--green-50); border-color: var(--green-300); }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.panel { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.panel h3 { font-size: 15.5px; }
+.panel p, .panel li { font-size: 13.8px; }
+a.mod { text-decoration: none; color: inherit; }
+a.mod:hover { border-color: var(--blue-300); background: var(--blue-50); }
+.mod .num { font-family: var(--f-display); color: var(--blue-text); font-weight: 700; }
+.rules { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; max-width: none; }
+.rules li { border-top: 2px solid var(--blue-300); padding-top: 8px; font-size: 13.8px; }
+.rules b { display: block; font-family: var(--f-display); }
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.fig { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.fig svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.fig.wide svg { min-width: 1000px; }
+figcaption { font-size: 13.5px; color: var(--muted); max-width: 86ch; }
+figcaption b { color: var(--ink); font-weight: 600; }
+
+/* Diagram classes. Text is black or grey; light blue marks gateways and the main path; red, yellow and green mark refusal, wait and pass. */
+.dg text { font-family: var(--f-body); font-size: 12.5px; fill: var(--ink); }
+.dg .ts { font-weight: 600; font-size: 13.5px; }
+.dg .tm { fill: var(--muted); font-size: 11.5px; }
+.dg .tc { font-family: var(--f-mono); font-size: 11.5px; fill: var(--muted); }
+.dg .tk { font-family: var(--f-mono); font-size: 11.5px; fill: var(--ink); }
+.dg .tb { fill: var(--blue-text); font-weight: 600; font-size: 11.5px; }
+.dg .tr { fill: var(--red-text); font-weight: 600; font-size: 11.5px; }
+.dg .trc { fill: var(--red-text); font-family: var(--f-mono); font-size: 11.5px; }
+.dg .ty { fill: var(--yellow-text); font-weight: 600; font-size: 11.5px; }
+.dg .tyc { fill: var(--yellow-text); font-family: var(--f-mono); font-size: 11.5px; }
+.dg .tg { fill: var(--green-text); font-weight: 600; font-size: 11.5px; }
+.dg .zone { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+.dg .box { fill: #ffffff; stroke: var(--line-strong); stroke-width: 1.2; }
+.dg .gate { fill: var(--blue-50); stroke: var(--blue-500); stroke-width: 1.4; }
+.dg .chan { fill: var(--blue-50); stroke: var(--blue-100); stroke-width: 1; }
+.dg .iso { fill: #ffffff; stroke: var(--faint); stroke-width: 1.3; stroke-dasharray: 6 4; }
+.dg .rbox { fill: var(--red-50); stroke: var(--red-300); stroke-width: 1.2; }
+.dg .ybox { fill: var(--yellow-50); stroke: var(--yellow-300); stroke-width: 1.2; }
+.dg .gbox { fill: var(--green-50); stroke: var(--green-300); stroke-width: 1.2; }
+.dg .ln { stroke: var(--faint); stroke-width: 1.4; fill: none; }
+.dg .la { stroke: var(--blue-500); stroke-width: 1.7; fill: none; }
+.dg .lr { stroke: var(--red-text); stroke-width: 1.4; fill: none; }
+.dg .lg { stroke: var(--green-text); stroke-width: 1.4; fill: none; }
+.dg .dash { stroke-dasharray: 5 4; }
+.dg .life { stroke: var(--line-strong); stroke-width: 1.2; stroke-dasharray: 3 5; }
+.dg .hm { fill: var(--faint); }
+.dg .ha { fill: var(--blue-500); }
+.dg .hr { fill: var(--red-text); }
+.dg .hg { fill: var(--green-text); }
+.dg .dot { fill: var(--faint); }
+
+@media (max-width: 860px) {
+  .grid3, .grid2 { grid-template-columns: 1fr; }
+  .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  body { font-size: 15px; }
+  .wrap { padding-inline: 16px; gap: 48px; }
+  .rules { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">内部技术分享 · {{项目名}}</div>
+  <h1>{{标题：模块 A、模块 B 与模块 C}}</h1>
+  <p class="lede">{{一句话：先用一张大图看清各层的模块和关系，再逐个讲核心子模块的原理和结构。}}</p>
+  <div class="facts">
+    <span>卡片 <b>{{#编号}}</b></span>
+    <span>{{N}} 个 PR，<b>+{{增}} / −{{删}}</b> 行</span>
+    <span>代码基线 <b>{{分支 提交}}</b></span>
+  </div>
+  <nav class="toc" aria-label="目录">
+    <a href="#overview">总览</a><a href="#m1">① {{模块一}}</a><a href="#m2">② {{模块二}}</a><a href="#appendix">附录</a>
+  </nav>
+  <p class="talk">建议讲法（约 {{N}} 分钟）：总览 {{n}} 分钟 → ① {{n}} → ② {{n}}。总图上的圈号对应后面各节。</p>
+</header>
+
+<!-- ============================ 总 ============================ -->
+<section id="overview">
+  <div class="tag">总</div>
+  <h2>总览：{{各层}}的模块结构</h2>
+  <p>{{一段话：每一层负责什么，一次调用从哪里进、经过哪些关口、结果怎么回来；用户在哪些地方直接参与。}}</p>
+
+  <!-- Example module map. Replace the boxes and labels; keep the paint order: zones, boxes, text, then connectors. -->
+  <figure>
+    <div class="fig wide">
+      <svg class="dg" viewBox="0 0 1100 470" role="img" aria-label="{{总图的结论：哪几层、哪些模块、主路径怎么走}}">
+        <defs>
+          <marker id="o1m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hm"/></marker>
+          <marker id="o1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ha"/></marker>
+        </defs>
+        <rect class="zone" x="16" y="16" width="80" height="440" rx="10"/>
+        <text class="ts" x="56" y="42" text-anchor="middle">用户</text>
+        <text class="tm" x="56" y="74" text-anchor="middle">发请求</text>
+
+        <rect class="zone" x="112" y="16" width="980" height="110" rx="10"/>
+        <text class="ts" x="128" y="40">{{第一层，例如 Agent 层}}</text>
+        <rect class="box" x="136" y="52" width="300" height="60" rx="8"/>
+        <text class="ts" x="152" y="76">{{模块}}</text>
+        <text class="tm" x="152" y="96">{{一句职责}}</text>
+
+        <rect class="zone" x="112" y="140" width="980" height="150" rx="10"/>
+        <text class="ts" x="128" y="164">{{第二层，例如服务端}}</text>
+        <rect class="gate" x="136" y="176" width="300" height="60" rx="8"/>
+        <text class="ts" x="152" y="200">{{关口}} <tspan class="tb">①</tspan></text>
+        <text class="tm" x="152" y="220">{{检查顺序的一句话}}</text>
+        <rect class="box" x="466" y="176" width="300" height="60" rx="8"/>
+        <text class="ts" x="482" y="200">{{下发服务}} <tspan class="tb">②</tspan></text>
+        <text class="tm" x="482" y="220">{{一句职责}}</text>
+
+        <rect class="chan" x="112" y="304" width="980" height="36" rx="8"/>
+        <text class="ts" x="128" y="327">{{通道，例如 WebSocket}}</text>
+
+        <rect class="zone" x="112" y="354" width="980" height="102" rx="10"/>
+        <text class="ts" x="128" y="378">{{第三层，例如客户端}}</text>
+        <rect class="box" x="466" y="388" width="300" height="56" rx="8"/>
+        <text class="ts" x="482" y="410">{{客户端入口}} <tspan class="tb">③</tspan></text>
+        <text class="tm" x="482" y="430">{{一句职责}}</text>
+
+        <!-- connectors last -->
+        <path class="la" d="M96,70 H134" marker-end="url(#o1a)"/>
+        <line class="la" x1="286" y1="112" x2="286" y2="174" marker-end="url(#o1a)"/>
+        <line class="la" x1="436" y1="206" x2="464" y2="206" marker-end="url(#o1a)"/>
+        <line class="la" x1="616" y1="236" x2="616" y2="386" marker-end="url(#o1a)"/>
+        <text class="tb" x="624" y="270">{{下行消息}}</text>
+      </svg>
+    </div>
+    <figcaption><b>读图顺序：</b>{{从上往下是一次调用的方向；说明每个关口检查什么，以及结果怎么回到上层。圈号标出后面各节讲的模块。}}</figcaption>
+  </figure>
+
+  <div class="grid3">
+    <a class="panel mod" href="#m1"><span class="num">① {{模块一}}</span><p>{{一句原理}}</p></a>
+    <a class="panel mod" href="#m2"><span class="num">② {{模块二}}</span><p>{{一句原理}}</p></a>
+    <a class="panel mod" href="#m3"><span class="num">③ {{模块三}}</span><p>{{一句原理}}</p></a>
+  </div>
+
+  <ul class="rules">
+    <li><b>{{规则短语}}</b>{{一句解释}}</li>
+    <li><b>{{规则短语}}</b>{{一句解释}}</li>
+    <li><b>{{规则短语}}</b>{{一句解释}}</li>
+    <li><b>{{规则短语}}</b>{{一句解释}}</li>
+  </ul>
+</section>
+
+<!-- ============================ 分 ============================ -->
+<section id="m1">
+  <div class="tag">分 · ① · {{PR 链接}} · <code>{{关键代码路径}}</code></div>
+  <h2><span class="no">①</span>{{模块一：一句副标题}}</h2>
+  <p><b>原理：</b>{{它怎么工作，为什么这样排；不复述图里的每条线。}}</p>
+
+  <!-- Example fan-in → gate → fan-out. Each source joins a bus; one arrow enters the gate. -->
+  <figure>
+    <div class="fig">
+      <svg class="dg" viewBox="0 0 1100 230" role="img" aria-label="{{结论：几个入口汇入一个关口，关口放行后分发给哪些执行者}}">
+        <defs>
+          <marker id="m1m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hm"/></marker>
+          <marker id="m1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ha"/></marker>
+          <marker id="m1r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="hr"/></marker>
+        </defs>
+        <rect class="box" x="20" y="20" width="240" height="44" rx="8"/><text class="ts" x="34" y="47">{{入口一}}</text>
+        <rect class="box" x="20" y="84" width="240" height="44" rx="8"/><text class="ts" x="34" y="111">{{入口二}}</text>
+        <rect class="box" x="20" y="148" width="240" height="44" rx="8"/><text class="ts" x="34" y="175">{{入口三}}</text>
+        <rect class="gate" x="340" y="66" width="250" height="80" rx="10"/>
+        <text class="ts" x="356" y="92">{{关口函数}}</text>
+        <text class="tr" x="356" y="114">{{不通过 → 拒绝码}}</text>
+        <text class="tb" x="356" y="134">{{通过 → 发通行证}}</text>
+        <rect class="box" x="680" y="20" width="250" height="52" rx="8"/><text class="ts" x="694" y="51">{{执行者一}}</text>
+        <rect class="box" x="680" y="140" width="250" height="52" rx="8"/><text class="ts" x="694" y="171">{{执行者二}}</text>
+        <rect class="rbox" x="370" y="176" width="190" height="40" rx="8"/><text class="tr" x="384" y="201">{{拒绝结果}}</text>
+
+        <path class="ln" d="M260,42 H300 M260,106 H300 M260,170 H300 M300,42 V170"/>
+        <line class="ln" x1="300" y1="106" x2="338" y2="106" marker-end="url(#m1m)"/>
+        <path class="la" d="M590,106 H630 M630,46 V166"/>
+        <line class="la" x1="630" y1="46" x2="678" y2="46" marker-end="url(#m1a)"/>
+        <line class="la" x1="630" y1="166" x2="678" y2="166" marker-end="url(#m1a)"/>
+        <line class="lr" x1="465" y1="146" x2="465" y2="174" marker-end="url(#m1r)"/>
+      </svg>
+    </div>
+    <figcaption><b>{{结论短语。}}</b>{{图里没写的约束、数字和来源。}}</figcaption>
+  </figure>
+
+  <div class="grid2">
+    <div class="panel"><h3>{{补充一}}</h3><ul><li>{{要点}}</li></ul></div>
+    <div class="panel"><h3>{{补充二}}</h3><ul><li>{{要点}}</li></ul></div>
+  </div>
+</section>
+
+<!-- ============================ 附录 ============================ -->
+<section id="appendix">
+  <div class="tag">附录</div>
+  <h2>合约改动、已知限制与代码索引</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>位置</th><th>改动</th><th>发布要求</th></tr></thead>
+    <tbody>
+      <tr><td class="k">{{合约或表}}</td><td>{{改了什么}}</td><td><span class="chip c-red">破坏性</span> {{要求}}</td></tr>
+    </tbody>
+  </table></div>
+  <div class="grid2">
+    <div class="panel"><h3>已知限制</h3><ul><li>{{限制}}</li></ul></div>
+    <div class="panel"><h3>代码与 PR 索引</h3><ul><li><b>①</b> <code>{{路径}}</code> · {{PR}}</li></ul></div>
+  </div>
+</section>
+
+</div>

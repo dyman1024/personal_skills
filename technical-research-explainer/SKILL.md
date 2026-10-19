@@ -1,6 +1,6 @@
 ---
 name: technical-research-explainer
-description: 调研、梳理、比较或解释技术主题、现有架构、既有技术方案、RFC、标准、论文与行业实践，使用可追溯证据、受控术语、事实与推断分离、机制与流程说明、同维度比较和明确的不确定性产出技术调研或解读。用户要求“技术调研”“方案调研”“技术选型比较”“解释或介绍现有技术方案、架构、RFC、论文”时使用；要求创建、重构、评审改进或落地新技术方案时改用 write-technical-solution，简单概念问答或纯代码修改时不要使用。
+description: 调研、梳理、比较或解释技术主题、现有架构、既有技术方案、RFC、标准、论文与行业实践，使用可追溯证据、受控术语、事实与推断分离、机制与流程说明、同维度比较和明确的不确定性产出技术调研或解读。用户要求“技术调研”“方案调研”“技术选型比较”“解释或介绍现有技术方案、架构、RFC、论文”时使用；要求创建、重构、评审改进或落地新技术方案时改用 write-technical-solution，简单概念问答或纯代码修改时不要使用；要把已有系统整理成以图为主的技术分享页或项目 wiki 页面时改用 tech-share-page。
 ---
 
 # Technical Research and Explanation
@@ -11,6 +11,7 @@ description: 调研、梳理、比较或解释技术主题、现有架构、既�
 - Do not silently turn an explanation of an existing design into a new design proposal.
 - Use `write-technical-solution` when the requested outcome is a new design, a substantial redesign, an implementation RFC, or a rollout plan. If a request contains both research and design, complete the evidence-based research first and use its findings as design inputs.
 - Scale the work to the request. Do not force a full report onto a simple explanation.
+- Use `tech-share-page` when the deliverable is a diagram-led sharing page or project wiki page about an existing system. That skill reuses this skill's evidence rules.
 - Write in the user's language unless the target document requires another language.
 
 ## Required writing guidance

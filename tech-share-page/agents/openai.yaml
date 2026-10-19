@@ -1,0 +1,4 @@
+interface:
+  display_name: "技术分享页（图解）"
+  short_description: "把已有系统整理成总—分结构、以手绘 SVG 原理图为主的技术分享或 wiki 页面"
+  default_prompt: "使用 $tech-share-page，把相关会话、PR 和代码整理成一份以图为主的技术分享页：先一张模块总图，再逐个讲核心子模块。"
